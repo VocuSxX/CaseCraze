@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="your_csrf_token_here">
+    <title>Case Opening</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-animateNumber/0.0.14/jquery.animateNumber.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="case-container">
+        <h2 id="case-title" data-caseid="1">Case Title</h2>
+        <div id="items-roulette-spinnable-wrap"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var openedCases = 0;
+            var totalSum = 0;
+
+            $("#btn-open-case").click(function() {
+                $('#btn-open-case').prop('disabled', true);
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: "POST",
+                    url: '/case/open',
+                    data: { "caseid": $("#case-title").data("caseid") },
+                    dataType: 'json',
+                    success: function (data) {
+                        openedCases++;
+                        var wonIndex = data[1];
+                        totalSum += data[0][wonIndex]['price'];
+                        var html = '<div id="items-roulette-spinnable-wrap">';
+                        $.each(data[0], function(index, value) {
+                            var stattrak = value['stattrak'] ? 'Stattrak™ ' : '';
+                            var souvenir = value['souvenir'] ? 'Souvenir ' : '';
+                            html += '<div class="item items-roulette-item" id="items-roulette-item-' + index + '">';
+                            html += '<div class="item-image-block">';
+                            html += '<img src="/storage/images/itemz/' + value['image'] + '" alt="' + value['weaponName'] + ' | ' + value['patternName'] + '" class="item-image item-abstract-image center-block">';
+                            html += '<div class="item-image-shadow"></div>';
+                            html += '</div>';
+                            html += '<div class="item-title item-background-' + value['rarity'] + '">';
+                            html += '<p class="item-title-weapon text-center">' + stattrak + souvenir + value['weaponName'] + '</p>';
+                            html += '<p class="item-title-pattern text-center">' + value['patternName'] + '</p>';
+                            html += '</div>';
+                            html += '</div>';
+                        });
+                        html += '</div>';
+                        $("#items-roulette-spinnable-wrap").replaceWith(html);
+
+                        var rouletteSpinnable = $("#items-roulette-spinnable");
+                        rouletteSpinnable.css("margin-left", "0");
+                        var randomMargin = ((130 + 3) * wonIndex) + Math.floor(Math.random() * ((-96) - (-222) + 1)) + (-222);
+
+                        rouletteSpinnable.animate({
+                            'marginLeft' : "-=" + randomMargin + "px"
+                        }, {
+                            duration: 5000,
+                            specialEasing: {
+                                marginLeft: "easeOutQuart"
+                            },
+                            complete: function() {
+                                $("#top-user-money").text((parseFloat($("#top-user-money").text()) + data[0][wonIndex]['price']).toFixed(2));
+                                $('#btn-open-case').prop('disabled', false);
+                            }
+                        });
+                    },
+                    error: function (data) {
+                        console.log('Error:', data);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>First Blood Event</title>
+
+</head>
+<body>
+    <header>
+        <div class="logo">Case Craze</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Strona Główna</a></li>
+                <li><a href="cases.html"><b>Skrzynki</b></a></li>
+                <li><a href="promotions.html">Promocje</a></li>
+                <li><a href="contact.html">Kontakt</a></li>
+            </ul>
+        </nav>
+        <button class="login-btn">Zaloguj się</button>
+    </header>
+    <main>
+        <section class="hero">
+            <h1 class="event-title">First Blood Event</h1>
+            <p>Otwieraj skrzynki i zdobywaj ekskluzywne skiny!</p>
+            <button class="cta-btn">Otwórz</button>
+        </section>
+        <section class="cases">
+            <div class="case">🔥 Skrzynka Premium</div>
+            <div class="case">💎 Skrzynka Diamentowa</div>
+            <div class="case">🤑 Skrzynka Ekonomiczna</div>
+            <div class="case">🎲 Mystery Box</div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 First Blood. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+</body>
+</html>
