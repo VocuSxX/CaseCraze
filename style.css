@@ -10,13 +10,9 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 50px;
-    background: #131722;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    width: 95%;
-    top: 0;
-    z-index: 1000;
+    padding: 10px 20px;
+    background-color: #222;
+    color: white;
 }
 
 .logo {
@@ -25,34 +21,74 @@ header {
     color: #ff9900;
 }
 
-nav ul {
-    list-style: none;
+nav {
+    flex: 1;
     display: flex;
-    gap: 30px;
+    justify-content: center;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
     padding: 0;
-    margin: 0;
 }
 
 nav ul li {
-    display: inline;
+    margin-right: 20px;
 }
 
 nav ul li a {
     color: white;
     text-decoration: none;
-    font-size: 16px;
-    transition: color 0.3s;
 }
 
 nav ul li a:hover {
     color: #ff9900;
 }
 
+.nav-wrapper {
+    position: absolute;
+    top: 4%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.login-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #222;
+    padding: 8px 15px;
+    border-radius: 10px;
+}
+
+.login-form input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    outline: none;
+    width: 130px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.login-form input::placeholder {
+    color: #bbb;
+}
+
 .login-btn {
     background: linear-gradient(45deg, #ff4500, #ff9900);
     color: white;
     border: none;
-    padding: 12px 25px;
+    padding: 10px 15px;
     cursor: pointer;
     border-radius: 15px;
     font-weight: bold;
@@ -63,10 +99,24 @@ nav ul li a:hover {
     opacity: 0.8;
 }
 
+.login-btn:active {
+    background-color: inherit;
+    color: inherit;
+    outline: none;
+    box-shadow: none;
+}
+
+.login-btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
 .hero {
     text-align: center;
     padding: 150px 20px 80px;
     background: url('grafiki/skrzynki.webp') no-repeat center/cover;
+    height: 50vh;
+    width: 100%;
 }
 
 .hero h1 {
@@ -114,8 +164,109 @@ nav ul li a:hover {
     box-shadow: 0px 0px 20px rgba(255, 153, 0, 0.5);
 }
 
+.case img {
+    width: 50%;
+    height: auto;
+}
+
 .wrapper {
     flex: 1;
+}
+
+.event-title {
+    color:red;
+}
+
+.register-form {
+    background: #222;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 350px;
+    margin: auto;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.register-form h2 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.register-form input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    border: none;
+    border-radius: 5px;
+    background: #333;
+    color: white;
+    box-sizing: border-box;
+}
+
+.register-btn {
+    background: #ff4d00;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.register-btn:hover {
+    background: #e64400;
+}
+
+.carousel-item {
+    width: 150px;
+    height: 150px;
+    object-fit: contain; /* Zachowuje proporcje obrazu, nie przycina */
+}
+
+.modal {
+    display: none; /* Początkowo modal jest ukryty */
+    position: fixed;
+    z-index: 1; /* Ustawiamy wyższy z-index, aby modal był nad resztą strony */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0); /* Czarny tło */
+    background-color: rgba(0,0,0,0.4); /* Z półprzezroczystością */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 300px;
+    text-align: center;
+}
+
+/* Przycisk zamknięcia */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Styl dla obrazka w modalu */
+.modal-image {
+    max-width: 100%;
+    max-height: 200px;
 }
 
 footer {

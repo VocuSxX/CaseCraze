@@ -1,93 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="your_csrf_token_here">
-    <title>Case Opening</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-animateNumber/0.0.14/jquery.animateNumber.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div id="case-container">
-        <h2 id="case-title" data-caseid="1">Case Title</h2>
-        <div id="items-roulette-spinnable-wrap"></div>
-    </div>
-
-    <script>
-        $(document).ready(function() {
-            var openedCases = 0;
-            var totalSum = 0;
-
-            $("#btn-open-case").click(function() {
-                $('#btn-open-case').prop('disabled', true);
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                $.ajax({
-                    type: "POST",
-                    url: '/case/open',
-                    data: { "caseid": $("#case-title").data("caseid") },
-                    dataType: 'json',
-                    success: function (data) {
-                        openedCases++;
-                        var wonIndex = data[1];
-                        totalSum += data[0][wonIndex]['price'];
-                        var html = '<div id="items-roulette-spinnable-wrap">';
-                        $.each(data[0], function(index, value) {
-                            var stattrak = value['stattrak'] ? 'Stattrak™ ' : '';
-                            var souvenir = value['souvenir'] ? 'Souvenir ' : '';
-                            html += '<div class="item items-roulette-item" id="items-roulette-item-' + index + '">';
-                            html += '<div class="item-image-block">';
-                            html += '<img src="/storage/images/itemz/' + value['image'] + '" alt="' + value['weaponName'] + ' | ' + value['patternName'] + '" class="item-image item-abstract-image center-block">';
-                            html += '<div class="item-image-shadow"></div>';
-                            html += '</div>';
-                            html += '<div class="item-title item-background-' + value['rarity'] + '">';
-                            html += '<p class="item-title-weapon text-center">' + stattrak + souvenir + value['weaponName'] + '</p>';
-                            html += '<p class="item-title-pattern text-center">' + value['patternName'] + '</p>';
-                            html += '</div>';
-                            html += '</div>';
-                        });
-                        html += '</div>';
-                        $("#items-roulette-spinnable-wrap").replaceWith(html);
-
-                        var rouletteSpinnable = $("#items-roulette-spinnable");
-                        rouletteSpinnable.css("margin-left", "0");
-                        var randomMargin = ((130 + 3) * wonIndex) + Math.floor(Math.random() * ((-96) - (-222) + 1)) + (-222);
-
-                        rouletteSpinnable.animate({
-                            'marginLeft' : "-=" + randomMargin + "px"
-                        }, {
-                            duration: 5000,
-                            specialEasing: {
-                                marginLeft: "easeOutQuart"
-                            },
-                            complete: function() {
-                                $("#top-user-money").text((parseFloat($("#top-user-money").text()) + data[0][wonIndex]['price']).toFixed(2));
-                                $('#btn-open-case').prop('disabled', false);
-                            }
-                        });
-                    },
-                    error: function (data) {
-                        console.log('Error:', data);
-                    }
-                });
-            });
-        });
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="your_csrf_token_here">
     <link rel="stylesheet" href="style.css">
     <title>First Blood Event</title>
-
 </head>
 <body>
     <header>
@@ -104,19 +22,67 @@
     </header>
     <main>
         <section class="hero">
-            <h1 class="event-title">First Blood Event</h1>
-            <p>Otwieraj skrzynki i zdobywaj ekskluzywne skiny!</p>
-            <button class="cta-btn">Otwórz</button>
-        </section>
-        <section class="cases">
-            <div class="case">🔥 Skrzynka Premium</div>
-            <div class="case">💎 Skrzynka Diamentowa</div>
-            <div class="case">🤑 Skrzynka Ekonomiczna</div>
-            <div class="case">🎲 Mystery Box</div>
+            <div class="carousel">
+                <div class="carousel-wrapper">
+                    <img src="grafiki/wep1.png" alt="Image 1" class="carousel-item">
+                    <img src="grafiki/wep2.png" alt="Image 2" class="carousel-item">
+                    <img src="grafiki/wep3.png" alt="Image 3" class="carousel-item">
+                    <img src="grafiki/wep4.png" alt="Image 4" class="carousel-item">
+                    <img src="grafiki/wep5.png" alt="Image 5" class="carousel-item">
+                    <img src="grafiki/wep6.png" alt="Image 6" class="carousel-item">
+                    <img src="grafiki/wep7.png" alt="Image 7" class="carousel-item">
+                    <img src="grafiki/wep8.png" alt="Image 8" class="carousel-item">
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2 id="winMessage"></h2>
+                            <img id="winImage" class="modal-image" alt="Wygrałeś">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <button id="drawBtn" class="draw-btn">Losuj!</button>
+            <div id="result" class="result"></div>
         </section>
     </main>
     <footer>
         <p>&copy; 2025 First Blood. Wszelkie prawa zastrzeżone.</p>
     </footer>
+
+    <script>
+        document.getElementById('drawBtn').addEventListener('click', function() {
+            const images = document.querySelectorAll('.carousel-item');
+            const randomIndex = Math.floor(Math.random() * images.length);
+            const selectedImage = images[randomIndex];
+            const resultText = `Wygrałeś: ${selectedImage.alt}`;
+
+            // Wyświetlanie modala
+            const modal = document.getElementById("myModal");
+            const winMessage = document.getElementById("winMessage");
+            const winImage = document.getElementById("winImage");
+
+            // Ustawienie tekstu i obrazka w modalu
+            winMessage.textContent = resultText;
+            winImage.src = selectedImage.src;
+
+            // Pokazanie modala
+            modal.style.display = "block";
+        });
+
+        // Zamknięcie modala
+        document.querySelector(".close").addEventListener('click', function() {
+            const modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        });
+
+        // Kliknięcie poza modalem także zamyka modal
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById("myModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    </script>
 </body>
 </html>
